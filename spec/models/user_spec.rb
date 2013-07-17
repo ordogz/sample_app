@@ -41,8 +41,8 @@ before do
   end
 
   describe "when email is not present" do
-  	before { @user.email = " "}
-  	it { should_not be_valid}
+    before { @user.email = " "}
+    it { should_not be_valid}
   end
 
   describe "when name is too long" do
@@ -121,5 +121,5 @@ before do
   end
   
   
-  	
+    
 end
