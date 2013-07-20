@@ -1,8 +1,22 @@
+/* mas fele navigacios szinek
+$navbarBackground:                #c79810 ;
+$navbarBackgroundHighlight:       #eab92d ;
+$navbarText:                      #f9ed9d ;
+$navbarLinkColor:                 #f9ed9d ;
+$navbarSearchPlaceholderColor:    #EEC844 ;*/
+
+
 @import "bootstrap";
 
 /* mixins, variables, etc. */
 
 $grayMediumLight: #eaeaea;
+
+@mixin box_sizing {
+  -moz-box-sizing: border-box; 
+  -webkit-box-sizing: border-box; 
+  box-sizing: border-box;
+}
 
 /* universal */
 
@@ -100,15 +114,6 @@ footer {
     }
   }
 }
-/* mixins, variables, etc. */
-
-$grayMediumLight: #eaeaea;
-
-@mixin box_sizing {
-  -moz-box-sizing: border-box; 
-  -webkit-box-sizing: border-box; 
-  box-sizing: border-box;
-}
 
 /* miscellaneous */
 
@@ -136,11 +141,10 @@ aside {
       line-height: 1;
     }
     h1 {
-      font-size: 1.4em;
+      font-size: 1.6em;
       text-align: left;
       letter-spacing: -1px;
       margin-bottom: 3px;
-      margin-top: 0px;
     }
   }
 }
@@ -156,16 +160,13 @@ input, textarea, select, .uneditable-input {
   border: 1px solid #bbb;
   width: 100%;
   padding: 10px;
+  height: auto;
   margin-bottom: 15px;
   @include box_sizing;
 }
 
-input {
-  height: auto !important;
-  }
-
 #error_explanation {
-  color: #f00;
+  color:#f00;
   ul {
     list-style: none;
     margin: 0 0 18px 0;
@@ -175,5 +176,19 @@ input {
 .field_with_errors {
   @extend .control-group;
   @extend .error;
-}
+ }
+ 
+ /* users index */
 
+.users {
+  list-style: none;
+  margin: 0;
+  li {
+    overflow: auto;
+    padding: 10px 0;
+    border-top: 1px solid $grayLighter;
+    &:last-child {
+      border-bottom: 1px solid $grayLighter
+    }
+  }
+}
