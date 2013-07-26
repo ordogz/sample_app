@@ -5,11 +5,11 @@ describe "User pages" do
   subject { page }
 
   describe "index" do
-    
+
+    let(:user) { FactoryGirl.create(:user) }
+
     before do
-      sign_in FactoryGirl.create(:user)
-      FactoryGirl.create(:user, name: "Bob", email: "bob@example.com")
-      FactoryGirl.create(:user, name: "Ben", email: "ben@example.com")
+      sign_in user
       visit users_path
     end
 
@@ -21,13 +21,8 @@ describe "User pages" do
 
       it { should have_link('Next') }
       it { should have_link('2') }
-
-      it "should list each user" do
-        User.all[0..2].each do |user|
-          page.should have_selector('li', text: user.name)
-        end
-      end
-       it { should_not have_link('delete') }
+      
+      it { should_not have_link('delete') }
 
       describe "as an admin user" do
         let(:admin) { FactoryGirl.create(:admin) }
@@ -41,7 +36,13 @@ describe "User pages" do
           expect { click_link('delete') }.to change(User, :count).by(-1)
         end
         it { should_not have_link('delete', href: user_path(admin)) }
-      end   
+      end
+
+      it "should list each user" do
+        User.all[0..2].each do |user|
+          page.should have_selector('li', text: user.name)
+        end
+      end
     end
   end
 
@@ -61,14 +62,14 @@ describe "User pages" do
       it { should have_content(user.microposts.count) }
     end
   end
-
+  
   describe "signup page" do
     before { visit signup_path }
-
-    it { should have_selector('h1',    text: 'Sign up') }
-    it { should have_selector('title', text: full_title('Sign up')) }
+    
+    it { should have_selector('h1',     text: 'Sign up') }
+    it { should have_selector('title',  text: full_title('Sign up')) }
   end
-
+  
   describe "signup" do
 
     before { visit signup_path }
@@ -76,13 +77,6 @@ describe "User pages" do
     describe "with invalid information" do
       it "should not create a user" do
         expect { click_button "Create my account" }.not_to change(User, :count)
-      end
-      
-      describe "error messages" do
-        before { click_button "Create my account" }
-
-        it { should have_selector('title', text: 'Sign up') }
-        it { should have_content('error') }
       end
     end
 
@@ -99,15 +93,17 @@ describe "User pages" do
           click_button "Create my account"
         end.to change(User, :count).by(1)
       end
-
+      
       describe "after saving the user" do
         before { click_button "Create my account" }
         let(:user) { User.find_by_email('user@example.com') }
 
         it { should have_selector('title', text: user.name) }
         it { should have_selector('div.alert.alert-success', text: 'Welcome') }
+        
         it { should have_link('Sign out') }
       end
+      
     end
   end
   
@@ -117,7 +113,7 @@ describe "User pages" do
       sign_in user
       visit edit_user_path(user)
     end
-
+      
     describe "page" do
       it { should have_selector('h1',    text: "Update your profile") }
       it { should have_selector('title', text: "Edit user") }
@@ -129,9 +125,8 @@ describe "User pages" do
 
       it { should have_content('error') }
     end
-
+    
     describe "with valid information" do
-      let(:user)      { FactoryGirl.create(:user) }
       let(:new_name)  { "New Name" }
       let(:new_email) { "new@example.com" }
       before do
@@ -148,5 +143,31 @@ describe "User pages" do
       specify { user.reload.name.should  == new_name }
       specify { user.reload.email.should == new_email }
     end
+  end
+  
+  describe "following/followers" do
+    let(:user) { FactoryGirl.create(:user) }
+    let(:other_user) { FactoryGirl.create(:user) }
+    before { user.follow!(other_user) }
+
+    describe "followed users" do
+      before do
+        sign_in user
+        visit following_user_path(user)
+      end
+
+      it { should have_link(other_user.name, href: user_path(other_user)) }
+    end
+
+    describe "followers" do
+      before do
+        sign_in other_user
+        visit followers_user_path(other_user)
+      end
+
+      it { should have_link(user.name, href: user_path(user)) }
+    end
+    
+    
   end
 end
